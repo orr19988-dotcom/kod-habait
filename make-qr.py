@@ -15,6 +15,7 @@
 """
 import os
 import sys
+import re
 import tempfile
 
 import segno
@@ -29,12 +30,31 @@ PNG_SCALE = 20   # פיקסלים לכל מודול. 20 נותן קובץ נוח
 BORDER = 4       # שוליים לבנים. מתחת ל‑4 מודולים סורקים מתחילים להתקשות
 
 
+def add_viewbox(svg_path):
+    """
+    segno כותב SVG עם width/height בלבד, בלי viewBox.
+    בלי viewBox דפדפן לא מקטין את התוכן כשנותנים ל‑<img> גודל אחר — ה‑QR יוצא חתוך.
+    זה בדיוק מה שקורה בקובץ המדבקה, שמציג אותו ב‑50 מ"מ.
+    """
+    with open(svg_path, "r", encoding="utf-8") as f:
+        svg = f.read()
+    if "viewBox" in svg:
+        return
+    m = re.search(r'<svg[^>]*?width="(\d+)"\s+height="(\d+)"', svg)
+    if not m:
+        return
+    svg = svg.replace("<svg", '<svg viewBox="0 0 %s %s"' % (m.group(1), m.group(2)), 1)
+    with open(svg_path, "w", encoding="utf-8") as f:
+        f.write(svg)
+
+
 def build(url, name):
     """יוצר SVG ו‑PNG. מחזיר (נתיב svg, נתיב png, מספר מודולים בצלע)."""
     qr = segno.make(url, error=ERROR_LEVEL)
     svg_path = name + ".svg"
     png_path = name + ".png"
     qr.save(svg_path, scale=SVG_SCALE, border=BORDER)
+    add_viewbox(svg_path)
     qr.save(png_path, scale=PNG_SCALE, border=BORDER)
     modules = qr.symbol_size(scale=1, border=0)[0]
     return svg_path, png_path, modules
@@ -48,7 +68,9 @@ def selftest():
         assert os.path.getsize(png) > 200, "קובץ ה‑PNG יצא ריק"
         assert modules >= 21, "מטריצת ה‑QR קטנה מדי"
         with open(svg, "r", encoding="utf-8") as f:
-            assert "<svg" in f.read(400), "ה‑SVG לא נראה כמו SVG"
+            head = f.read(400)
+        assert "<svg" in head, "ה‑SVG לא נראה כמו SVG"
+        assert "viewBox" in head, "חסר viewBox — ה‑QR ייחתך כשמקטינים אותו במדבקה"
     print("בדיקה עצמית עברה ✓")
     return 0
 
