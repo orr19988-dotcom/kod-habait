@@ -84,7 +84,26 @@ def validate(data, filename):
         if key in data and not isinstance(data[key], list):
             errors.append("השדה '%s' חייב להיות רשימה" % key)
 
+    # הפרומפט שהופך תשובות לקוח ל-JSON מסמן מידע חסר ב-[חסר: ...].
+    # אסור שזה יגיע לאורח, אז הבנייה נחסמת עד שמשלימים את המידע מהלקוח.
+    for where in find_placeholders(data, ""):
+        errors.append("נשאר סימון מידע חסר ב'%s' — צריך לשאול את הלקוח ולהשלים" % where)
+
     return errors
+
+
+def find_placeholders(node, path):
+    """מחזיר את הנתיבים שבהם נשאר טקסט [חסר: ...]."""
+    found = []
+    if isinstance(node, dict):
+        for k, val in node.items():
+            found += find_placeholders(val, path + "." + k if path else k)
+    elif isinstance(node, list):
+        for i, val in enumerate(node):
+            found += find_placeholders(val, "%s[%d]" % (path, i + 1))
+    elif isinstance(node, str) and "[חסר" in node:
+        found.append(path or "(שורש)")
+    return found
 
 
 def load_properties():
@@ -255,6 +274,17 @@ def selftest():
     bad_id["id"] = "Red View"
     errs = validate(bad_id, "Red View.json")
     assert any("'id'" in e for e in errs), "הוולידציה לא תפסה id לא חוקי"
+
+    missing = json.loads(json.dumps(broken))
+    missing["wifi"]["pass"] = "[חסר: הסיסמה לא נשלחה]"
+    errs = validate(missing, "x.json")
+    assert any("wifi.pass" in e for e in errs), "הוולידציה לא תפסה סימון מידע חסר"
+
+    deep = json.loads(json.dumps(broken))
+    deep["wifi"]["pass"] = "abc"
+    deep["rules"] = [{"he": "בסדר", "en": "ok"}, {"he": "[חסר: מה עם עישון]", "en": "x"}]
+    errs = validate(deep, "x.json")
+    assert any("rules[2]" in e for e in errs), "הוולידציה לא תפסה סימון חסר בתוך רשימה"
 
     ok = json.loads(json.dumps(broken))
     ok["wifi"]["pass"] = "abc"
