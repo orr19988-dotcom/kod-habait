@@ -1,0 +1,83 @@
+{
+  "id": "red-view",
+  "demo": true,
+  "name": { "he": "דירת ״נוף אדום״ — דוגמה", "en": "\"Red View\" Apartment — demo" },
+  "area": { "he": "אזור החוף הצפוני, אילת", "en": "North Beach area, Eilat" },
+
+  "wifi": { "ssid": "RedView_Guest", "pass": "eilat2026" },
+
+  "checkin": {
+    "from": "15:00",
+    "to": "11:00",
+    "entry": {
+      "he": "הכניסה עצמאית. כספת המפתחות תלויה ליד דלת הכניסה, והקוד נשלח בוואטסאפ בבוקר ההגעה.",
+      "en": "Self check-in. The key safe hangs next to the front door. We send the code by WhatsApp on the morning of arrival."
+    }
+  },
+
+  "parking": {
+    "text": {
+      "he": "חניה חופשית ברחובות סביב הבניין. בדרך כלל מתפנים מקומות אחרי 16:00.",
+      "en": "Free street parking around the building. Spots usually open up after 16:00."
+    },
+    "alt": {
+      "he": "אם אין מקום, יש חניון ציבורי בהליכה של כ‑4 דקות.",
+      "en": "If it is full, there is a public car park about a 4 minute walk away."
+    },
+    "nav": "https://waze.com/ul?q=Eilat"
+  },
+
+  "host": {
+    "label": { "he": "דנה, בעלת הדירה (דמה)", "en": "Dana, the host (demo)" },
+    "whatsapp": "972500000000"
+  },
+
+  "rules": [
+    { "he": "אנחנו לא מעשנים בתוך הדירה. במרפסת בשמחה.", "en": "Please do not smoke inside the apartment. The balcony is fine." },
+    { "he": "בין 22:00 ל‑08:00 נשמח לשקט. השכנים גרים כאן כל השנה.", "en": "Please keep it quiet between 22:00 and 08:00. The neighbours live here all year." },
+    { "he": "הדירה לא מתאימה למסיבות ולאירועים.", "en": "The apartment is not suitable for parties or events." },
+    { "he": "לפני היציאה נשמח אם תוציאו את האשפה לפח שבחוץ.", "en": "Before you leave, please take the rubbish to the bin outside." },
+    { "he": "יש מקלחת שטיפה בכניסה — נעים יותר להיכנס בלי חול.", "en": "There is a rinse shower at the entrance. Nicer to come in without sand." }
+  ],
+
+  "devices": [
+    {
+      "name": { "he": "מזגן", "en": "Air conditioner" },
+      "how": {
+        "he": "השלט נמצא על השידה. לוחצים ON, ואז חץ מעלה או מטה לטמפרטורה. 24 מעלות זה נעים.",
+        "en": "The remote is on the dresser. Press ON, then the up or down arrow for temperature. 24 degrees is comfortable."
+      }
+    },
+    {
+      "name": { "he": "מכונת כביסה", "en": "Washing machine" },
+      "how": {
+        "he": "אבקה בתא השמאלי, מסובבים לתוכנית 2 ולוחצים START. התוכנית לוקחת כשעה.",
+        "en": "Powder goes in the left compartment. Turn the dial to program 2 and press START. It takes about an hour."
+      }
+    },
+    {
+      "name": { "he": "טלוויזיה", "en": "TV" },
+      "how": {
+        "he": "השלט השחור מדליק את הטלוויזיה, האפור מפעיל את הממיר. אין תמונה? לוחצים SOURCE ובוחרים HDMI 1.",
+        "en": "The black remote turns on the TV, the grey one turns on the receiver. No picture? Press SOURCE and choose HDMI 1."
+      }
+    }
+  ],
+
+  "emergency": [
+    { "name": { "he": "משטרה", "en": "Police" }, "tel": "100" },
+    { "name": { "he": "מד״א — אמבולנס", "en": "Ambulance (MDA)" }, "tel": "101" },
+    { "name": { "he": "כבאות", "en": "Fire" }, "tel": "102" }
+  ],
+
+  "tips": [
+    { "name": { "he": "החוף הקרוב [דוגמה]", "en": "The nearby beach [demo]" }, "note": { "he": "כ‑8 דקות הליכה. בבוקר הכי שקט.", "en": "About an 8 minute walk. Quietest in the morning." } },
+    { "name": { "he": "סופרמרקט [דוגמה]", "en": "Supermarket [demo]" }, "note": { "he": "3 דקות הליכה, פתוח עד 22:00.", "en": "A 3 minute walk, open until 22:00." } },
+    { "name": { "he": "בית קפה לארוחת בוקר [דוגמה]", "en": "Breakfast cafe [demo]" }, "note": { "he": "נפתח ב‑07:30, יש גם אופציות טבעוניות.", "en": "Opens at 07:30, vegan options too." } },
+    { "name": { "he": "מסעדת דגים [דוגמה]", "en": "Fish restaurant [demo]" }, "note": { "he": "כדאי להזמין מקום מראש בסופי שבוע.", "en": "Worth booking ahead on weekends." } },
+    { "name": { "he": "טיילת אילת [דוגמה]", "en": "Eilat promenade [demo]" }, "note": { "he": "נעים במיוחד אחרי השקיעה.", "en": "Especially nice after sunset." } },
+    { "name": { "he": "מרכז קניות [דוגמה]", "en": "Shopping centre [demo]" }, "note": { "he": "כ‑10 דקות נסיעה, יש חניון.", "en": "About a 10 minute drive, has a car park." } }
+  ],
+
+  "review": { "url": "https://example.com/review-demo" }
+}

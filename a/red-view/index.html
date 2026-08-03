@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+
+<!-- ==========================================================
+     היעד — זו השורה היחידה שמשנים כשרוצים להפנות למקום אחר.
+     ה‑QR שהודפס לא משתנה לעולם. רק השורה הזו.
+     ========================================================== -->
+<meta http-equiv="refresh" content="0; url=../../g/red-view/">
+<!-- ========================================================== -->
+
+<title>רגע אחד…</title>
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+       background:#f5f6f8;color:#131820;
+       font:16px/1.6 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;text-align:center}
+  @media (prefers-color-scheme:dark){ body{background:#0f1318;color:#e9edf2} }
+  .box{padding:24px}
+  a{color:#0e6d51;font-weight:700}
+  @media (prefers-color-scheme:dark){ a{color:#3fb392} }
+</style>
+</head>
+<body>
+  <div class="box">
+    <p>פותחים את מדריך האורח…</p>
+    <p><a id="go" href="#">לחצו כאן אם לא נפתח אוטומטית</a></p>
+  </div>
+<script>
+(function(){
+  var m = document.querySelector('meta[http-equiv="refresh"]');
+  var url = m ? m.getAttribute("content").split(/url=/i)[1] : "";
+  if (url) document.getElementById("go").setAttribute("href", url.trim());
+})();
+</script>
+</body>
+</html>

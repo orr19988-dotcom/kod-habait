@@ -75,6 +75,32 @@ def selftest():
     return 0
 
 
+def build_all(base):
+    """יוצר QR לכל נכס ב-properties/. הקבצים נשמרים בתיקייה qr/."""
+    import json
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    props = os.path.join(here, "properties")
+    out = os.path.join(here, "qr")
+    os.makedirs(out, exist_ok=True)
+
+    base = base.rstrip("/")
+    names = sorted(f for f in os.listdir(props) if f.endswith(".json"))
+    if not names:
+        print("אין נכסים בתיקייה properties/")
+        return 1
+
+    for name in names:
+        with open(os.path.join(props, name), "r", encoding="utf-8-sig") as f:
+            pid = json.load(f)["id"]
+        url = "%s/a/%s/" % (base, pid)
+        svg, png, modules = build(url, os.path.join(out, pid))
+        print("%-14s %s  (%dx%d)" % (pid, url, modules, modules))
+
+    print("\nנוצרו %d קודים בתיקייה qr/" % len(names))
+    return 0
+
+
 def main():
     args = sys.argv[1:]
     if not args:
@@ -82,6 +108,11 @@ def main():
         return 1
     if args[0] == "--selftest":
         return selftest()
+    if args[0] == "--all":
+        if len(args) < 2:
+            print("שימוש: py make-qr.py --all https://user.github.io/kod-habait")
+            return 1
+        return build_all(args[1].strip())
 
     url = args[0].strip()
     name = args[1].strip() if len(args) > 1 else "qr"

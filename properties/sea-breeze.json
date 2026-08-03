@@ -1,0 +1,27 @@
+{
+  "_note": "נכס דוגמה שני. מכיל בכוונה רק את שדות החובה + חלק מהרשות, כדי להוכיח שמקטע חסר פשוט לא מוצג.",
+  "id": "sea-breeze",
+  "demo": true,
+  "name": { "he": "סטודיו ״רוח ים״ — דוגמה", "en": "\"Sea Breeze\" Studio — demo" },
+  "area": { "he": "מרכז אילת", "en": "Central Eilat" },
+
+  "wifi": { "ssid": "SeaBreeze", "pass": "breeze77" },
+
+  "checkin": { "from": "16:00", "to": "10:00" },
+
+  "host": {
+    "label": { "he": "יוסי, בעל הסטודיו (דמה)" },
+    "whatsapp": "972500000001"
+  },
+
+  "rules": [
+    { "he": "לא מעשנים בפנים.", "en": "No smoking inside." },
+    { "he": "שקט בין 22:00 ל‑08:00.", "en": "Quiet between 22:00 and 08:00." }
+  ],
+
+  "emergency": [
+    { "name": { "he": "משטרה", "en": "Police" }, "tel": "100" },
+    { "name": { "he": "מד״א — אמבולנס", "en": "Ambulance (MDA)" }, "tel": "101" },
+    { "name": { "he": "כבאות", "en": "Fire" }, "tel": "102" }
+  ]
+}
