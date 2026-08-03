@@ -69,7 +69,8 @@ def prune(dest_dir):
 def alert(message):
     """ההתראה: קובץ בולט על שולחן העבודה. בלי שירות ובלי עלות."""
     try:
-        with open(ALERT_FILE, "w", encoding="utf-8") as f:
+        # utf-8-sig כדי שפנקס הרשימות של ווינדוס יציג עברית ולא ג'יבריש
+        with open(ALERT_FILE, "w", encoding="utf-8-sig") as f:
             f.write("הגיבוי של קוד הבית נכשל.\n\n")
             f.write("מתי: %s\n\n" % datetime.datetime.now().strftime("%d/%m/%Y %H:%M"))
             f.write("מה קרה:\n%s\n\n" % message)
