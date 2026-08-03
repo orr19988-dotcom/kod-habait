@@ -1,0 +1,70 @@
+# בודק פעם ביום שכל המדריכים באוויר ושתעודת ה-HTTPS בתוקף.
+# אם משהו נפל — הריצה נכשלת וגיטהאב שולח לך מייל אוטומטית.
+# בלי חשבון נוסף, בלי תשלום, בלי שירות חיצוני.
+
+name: בדיקת זמינות
+
+on:
+  schedule:
+    - cron: "0 6 * * *"      # כל יום ב-06:00 UTC (09:00 בישראל)
+  workflow_dispatch:          # אפשר גם להריץ ידנית מלשונית Actions
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: בניית רשימת הכתובות לבדיקה
+        id: urls
+        run: |
+          BASE="https://orr19988-dotcom.github.io/kod-habait"
+          {
+            echo "$BASE/"
+            echo "$BASE/offer/"
+            echo "$BASE/a/demo/"
+            python3 - <<'PY'
+          import json, os, glob
+          base = "https://orr19988-dotcom.github.io/kod-habait"
+          for f in sorted(glob.glob("properties/*.json")):
+              with open(f, encoding="utf-8-sig") as fh:
+                  pid = json.load(fh)["id"]
+              print(f"{base}/a/{pid}/")
+              print(f"{base}/g/{pid}/")
+          PY
+          } > urls.txt
+          echo "נבדקות $(wc -l < urls.txt) כתובות:"
+          cat urls.txt
+
+      - name: בדיקת כל הכתובות
+        run: |
+          FAILED=0
+          while read -r url; do
+            [ -z "$url" ] && continue
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "$url")
+            TIME=$(curl -s -o /dev/null -w "%{time_total}" --max-time 20 "$url")
+            if [ "$CODE" = "200" ]; then
+              echo "✓ $CODE  ${TIME}s  $url"
+            else
+              echo "✗ $CODE  $url"
+              FAILED=1
+            fi
+          done < urls.txt
+          if [ "$FAILED" = "1" ]; then
+            echo "::error::מדריך אחד או יותר לא נטען. בדוק את הרשימה למעלה."
+            exit 1
+          fi
+
+      - name: בדיקת תוקף תעודת HTTPS
+        run: |
+          HOST="orr19988-dotcom.github.io"
+          END=$(echo | openssl s_client -servername "$HOST" -connect "$HOST":443 2>/dev/null \
+                | openssl x509 -noout -enddate | cut -d= -f2)
+          END_TS=$(date -d "$END" +%s)
+          NOW_TS=$(date +%s)
+          DAYS=$(( (END_TS - NOW_TS) / 86400 ))
+          echo "התעודה בתוקף עוד $DAYS ימים (עד $END)"
+          if [ "$DAYS" -lt 14 ]; then
+            echo "::error::תעודת ה-HTTPS פגה בעוד $DAYS ימים"
+            exit 1
+          fi
