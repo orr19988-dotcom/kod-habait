@@ -79,6 +79,12 @@ def validate(data, filename):
         for i, item in enumerate(emergency):
             if not isinstance(item, dict) or not str(item.get("tel", "")).strip():
                 errors.append("ב'emergency' פריט מספר %d חסר שדה 'tel'" % (i + 1))
+                continue
+            tel = str(item["tel"]).strip()
+            # מספר חיוג: ספרות, ואפשר + בהתחלה ומקפים או רווחים באמצע.
+            # מספר לא תקין נראה תקין בעמוד אבל פשוט לא מחייג.
+            if not re.match(r"^\+?[\d][\d\s-]*$", tel):
+                errors.append("ב'emergency' פריט %d: '%s' אינו מספר חיוג תקין" % (i + 1, tel))
 
     for key in ("rules", "devices", "emergency", "tips"):
         if key in data and not isinstance(data[key], list):
@@ -254,6 +260,38 @@ def build(properties):
         print("  נבנה: g/%s/  ·  a/%s/  ·  stickers/%s.html" % (pid, pid, pid))
 
 
+def audit_links(properties):
+    """
+    בודק את הקישורים בעמודים שנבנו בפועל, לא רק בקבצי המקור.
+    קישור חיצוני בלי rel="noopener" נותן לעמוד היעד גישה לחלון שלנו.
+    """
+    problems = []
+    for data in properties:
+        pid = data["id"]
+        path = os.path.join(HERE, "g", pid, "index.html")
+        if not os.path.exists(path):
+            problems.append("g/%s/index.html לא נוצר" % pid)
+            continue
+        with open(path, "r", encoding="utf-8") as f:
+            html = f.read()
+
+        if "__PROPERTY_DATA__" in html:
+            problems.append("g/%s: התבנית לא מולאה בנתונים" % pid)
+        if 'target = "_blank"' in html or 'target="_blank"' in html:
+            if "noopener" not in html:
+                problems.append("g/%s: יש קישור שנפתח בלשונית חדשה בלי rel=noopener" % pid)
+        for bad in ("javascript:", "data:text/html"):
+            if bad in html:
+                problems.append("g/%s: נמצאה כתובת מסוכנת (%s)" % (pid, bad))
+
+        redirect = os.path.join(HERE, "a", pid, "index.html")
+        if os.path.exists(redirect):
+            with open(redirect, "r", encoding="utf-8") as f:
+                if ("url=../../g/%s/" % pid) not in f.read():
+                    problems.append("a/%s: ההפניה לא מצביעה על המדריך הנכון" % pid)
+    return problems
+
+
 def selftest():
     """מוודא שהוולידציה באמת תופסת קובץ פגום ולא רק אומרת שהכול בסדר."""
     broken = {"id": "x", "name": {"he": "בלי סיסמה"},
@@ -286,8 +324,15 @@ def selftest():
     errs = validate(deep, "x.json")
     assert any("rules[2]" in e for e in errs), "הוולידציה לא תפסה סימון חסר בתוך רשימה"
 
+    bad_tel = json.loads(json.dumps(broken))
+    bad_tel["wifi"]["pass"] = "abc"
+    bad_tel["emergency"] = [{"name": {"he": "משטרה"}, "tel": "מאה"}]
+    errs = validate(bad_tel, "x.json")
+    assert any("אינו מספר חיוג תקין" in e for e in errs), "הוולידציה לא תפסה מספר חיוג פסול"
+
     ok = json.loads(json.dumps(broken))
     ok["wifi"]["pass"] = "abc"
+    ok["emergency"] = [{"name": {"he": "משטרה"}, "tel": "100"}]
     assert validate(ok, "x.json") == [], "הוולידציה נכשלה על קובץ תקין"
 
     print("בדיקה עצמית עברה ✓")
@@ -313,6 +358,14 @@ def main():
         return 0
 
     build(properties)
+
+    link_problems = audit_links(properties)
+    if link_problems:
+        print("\nבעיות בקישורים בעמודים שנבנו:")
+        for p in link_problems:
+            print("  ✗ " + p)
+        return 1
+    print("\nכל הקישורים בעמודים שנבנו תקינים.")
     print("\nהכול נבנה. אל תערוך את הקבצים ב‑g/ וב‑a/ ידנית — הם נכתבים מחדש בכל בנייה.")
     return 0
 

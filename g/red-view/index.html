@@ -349,7 +349,9 @@ function safeUrl(u){ return /^(https?:|tel:)/i.test(u) ? u : "#"; }
 function section(icon, title, open){
   const d = el("details"); if (open) d.open = true;
   const s = el("summary");
-  s.appendChild(el("span","ico",icon));
+  const ic = el("span","ico",icon);
+  ic.setAttribute("aria-hidden","true");   // האייקון דקורטיבי, קורא מסך ידלג עליו
+  s.appendChild(ic);
   s.appendChild(el("span",null,title));
   const b = el("div","body");
   d.appendChild(s); d.appendChild(b);
@@ -410,6 +412,7 @@ function render(){
   s.body.appendChild(kv(t("net"), P.wifi.ssid));
   const pass = el("button","","" + P.wifi.pass);
   pass.id = "pass"; pass.type = "button";
+  pass.setAttribute("aria-label", t("pass") + ": " + P.wifi.pass + ". " + t("tapCopy"));
   const hint = el("p","muted",t("tapCopy")); hint.id = "passhint";
   pass.addEventListener("click", () => copyPass(hint));
   s.body.appendChild(pass); s.body.appendChild(hint);
